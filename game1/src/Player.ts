@@ -61,13 +61,11 @@ export class Player extends Entity {
     if (interactionObject instanceof TileInteraction) {
       const worldPosition = this.getWorldPosition(new THREE.Vector3());
 
-      const tile =
-          this.game.getTileFromPosition(worldPosition.x, worldPosition.y);
+      const tile = this.game.getTileFromWorldPosition(
+          {x: worldPosition.x, y: worldPosition.y});
 
       const path = this.pathFinder.getPath(
           tile || expect(), interactionObject.getTile() || expect());
-
-      console.log(path);
 
       if (path !== undefined) {
         this.currentPath = path;

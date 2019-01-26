@@ -23,19 +23,7 @@ function getWithDefault<K, V>(map: Map<K, V>, key: K, defaultValue: V): V {
 export class PathFinder {
   constructor(private game: Game) {}
 
-  getPath(start: TilePosition, end: TilePosition): PathPoint[]|undefined {
-    const startTile = this.game.getTile(start.x, start.y);
-
-    if (startTile === undefined) {
-      throw new Error('Could not get tile');
-    }
-
-    const endTile = this.game.getTile(end.x, end.y);
-
-    if (endTile === undefined) {
-      throw new Error('Could not get tile');
-    }
-
+  getPath(startTile: Tile, endTile: Tile): PathPoint[]|undefined {
     // Using A* from: https://en.wikipedia.org/wiki/A*_search_algorithm
     const closedSet = new Set<Tile>();
 
@@ -96,8 +84,6 @@ export class PathFinder {
           continue;
         }
 
-        console.log(neighborNode, currentNode, tentativeGScore);
-
         cameFrom.set(neighborNode, currentNode);
         gScore.set(neighborNode, tentativeGScore);
         fScore.set(
@@ -116,14 +102,14 @@ export class PathFinder {
 
     ret.push({
       tile: current,
-      pos: this.game.getTileWorldPosition(current) || expect()
+      pos: this.game.getWorldPositionFromTile(current) || expect()
     });
 
     while (cameFrom.has(current)) {
       current = cameFrom.get(current) || expect();
       ret.push({
         tile: current,
-        pos: this.game.getTileWorldPosition(current) || expect()
+        pos: this.game.getWorldPositionFromTile(current) || expect()
       });
     }
 
@@ -131,8 +117,8 @@ export class PathFinder {
   }
 
   private estimateDistance(a: Tile, b: Tile) {
-    const aPos = this.game.getTileWorldPosition(a) || expect();
-    const bPos = this.game.getTileWorldPosition(b) || expect();
+    const aPos = this.game.getWorldPositionFromTile(a) || expect();
+    const bPos = this.game.getWorldPositionFromTile(b) || expect();
 
     return tileDistance(aPos, bPos);
   }

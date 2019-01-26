@@ -8,9 +8,34 @@ export function expect(): never {
   throw new Error('Expect failed');
 }
 
+/**
+ * The global or local index of a tile in the tile grid.
+ */
 export interface TilePosition {
   x: number;
   y: number;
+
+  __tileFlag?: unknown;
+}
+
+/**
+ * The global index of a chunk in the world grid.
+ */
+export interface ChunkPosition {
+  x: number;
+  y: number;
+
+  __chunkFlag?: unknown;
+}
+
+/**
+ * A OpenGL world position that comes from frontend rendering code.
+ */
+export interface WorldPosition {
+  x: number;
+  y: number;
+
+  __worldFlag?: unknown;
 }
 
 export function tileDistance(a: TilePosition, b: TilePosition) {
