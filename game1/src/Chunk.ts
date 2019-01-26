@@ -1,8 +1,10 @@
 import * as THREE from 'three';
 
+import {setMaterial} from './common';
 import {Entity, IntractableEntity} from './Entity';
 import {Game} from './Game';
 import {InteractionObject} from './InteractionObject';
+import {PLACEHOLDER_CHUNK} from './Model';
 
 const enum TileType {
   Solid,
@@ -39,14 +41,32 @@ export class TileInteraction extends InteractionObject {
 
 export class Chunk extends IntractableEntity {
   tiles: Tile[][] = [];
-  geometry: THREE.Mesh;
+  geometry: THREE.Group;
 
   constructor(game: Game) {
     super(game);
 
-    this.geometry = new THREE.Mesh(
-        new THREE.PlaneGeometry(16, 16),
-        new THREE.MeshBasicMaterial({color: 'green'}));
+    this.geometry = game.resourceLoader.loadOBJContent(PLACEHOLDER_CHUNK);
+
+    setMaterial(
+        this.geometry.children[0], 'Floor',
+        new THREE.MeshBasicMaterial({color: 0x101010}));
+
+    setMaterial(
+        this.geometry.children[0], 'Grass',
+        new THREE.MeshBasicMaterial({color: 0x2C5D27}));
+
+    setMaterial(
+        this.geometry.children[0], 'InnerWall',
+        new THREE.MeshBasicMaterial({color: 0x4DE7E4}));
+
+    setMaterial(
+        this.geometry.children[0], 'TopRoof',
+        new THREE.MeshBasicMaterial({color: 0x0065E7}));
+
+    setMaterial(
+        this.geometry.children[0], 'OuterWall',
+        new THREE.MeshBasicMaterial({color: 0xE7E7E7}));
 
     this.add(this.geometry);
 
@@ -64,12 +84,10 @@ export class Chunk extends IntractableEntity {
 
   onInteract(source: Entity, intersect: THREE.Intersection): InteractionObject
       |null {
-    if (intersect.uv === undefined) {
-      throw new Error('Not Implemented');
-    }
+    const localPoint = this.worldToLocal(intersect.point);
 
-    const tileX = intersect.uv.x * CHUNK_WIDTH;
-    const tileY = intersect.uv.y * CHUNK_HEIGHT;
+    const tileX = localPoint.x + (CHUNK_WIDTH / 2);
+    const tileY = localPoint.y + (CHUNK_HEIGHT / 2);
 
     return new TileInteraction(this, Math.floor(tileX), Math.floor(tileY));
   }

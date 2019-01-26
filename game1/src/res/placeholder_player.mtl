@@ -1,0 +1,12 @@
+# Blender MTL File: 'prototype_player.blend'
+# Material Count: 1
+
+newmtl Player
+Ns 94.117647
+Ka 1.000000 1.000000 1.000000
+Kd 0.025267 0.110689 0.020120
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2

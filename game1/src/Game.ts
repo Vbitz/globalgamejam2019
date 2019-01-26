@@ -12,12 +12,14 @@ export class Game {
   renderer: THREE.WebGLRenderer;
   scene = new THREE.Scene();
   player: Player;
-  world = new World(this);
+  world: World;
+  ambientLight = new THREE.AmbientLight(new THREE.Color('white'), 1);
   resourceLoader = new ResourceLoader();
 
   constructor(private document: Document) {
     this.renderer = new THREE.WebGLRenderer({antialias: true});
 
+    this.world = new World(this);
     this.player = new Player(this);
   }
 
@@ -31,7 +33,7 @@ export class Game {
 
     window.addEventListener('resize', this.onResize.bind(this));
 
-    this.scene.add(this.player, this.world);
+    this.scene.add(this.player, this.world, this.ambientLight);
 
     this.renderer.setClearColor(new THREE.Color('blue'));
 

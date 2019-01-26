@@ -1,10 +1,10 @@
 import * as THREE from 'three';
 
 import {Tile, TileInteraction} from './Chunk';
-import {expect, TilePosition} from './common';
+import {expect, setMaterial, TilePosition} from './common';
 import {Entity} from './Entity';
 import {Game} from './Game';
-import {BLENDER_MONKEY} from './Model';
+import {BLENDER_MONKEY, OBJ_MEMES, PLACEHOLDER_PLAYER} from './Model';
 import {PathFinder, PathPoint} from './PathFinder';
 
 export class Player extends Entity {
@@ -20,7 +20,13 @@ export class Player extends Entity {
   constructor(game: Game) {
     super(game);
 
-    this.geometry = this.game.resourceLoader.loadOBJContent(BLENDER_MONKEY);
+    this.geometry = this.game.resourceLoader.loadOBJContent(PLACEHOLDER_PLAYER);
+
+    setMaterial(
+        this.geometry.children[0], 'Player',
+        new THREE.MeshBasicMaterial({color: 0x13f1a2}));
+
+    console.log(this.geometry);
 
     this.pathFinder = new PathFinder(game);
 
