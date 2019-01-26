@@ -10,7 +10,9 @@ const enum TileType {
 }
 
 export class Tile {
-  constructor(readonly x: number, readonly y: number, public type: TileType) {}
+  constructor(
+      readonly owner: Chunk, readonly x: number, readonly y: number,
+      public type: TileType) {}
 
   isSolid() {
     return this.type === TileType.Solid;
@@ -66,8 +68,6 @@ export class Chunk extends IntractableEntity {
       throw new Error('Not Implemented');
     }
 
-    console.log(intersect);
-
     const tileX = intersect.uv.x * CHUNK_WIDTH;
     const tileY = intersect.uv.y * CHUNK_HEIGHT;
 
@@ -81,9 +81,18 @@ export class Chunk extends IntractableEntity {
     return this.tiles[x][y];
   }
 
+  getTileFromPosition(x: number, y: number): Tile|undefined {
+    return this.getTile(
+        Math.floor(x + (CHUNK_WIDTH / 2)), Math.floor(y + (CHUNK_WIDTH / 2)));
+  }
+
   calculateWorldPosition(x: number, y: number): THREE.Vector3 {
     return this.getWorldPosition(new THREE.Vector3())
         .add(this.getTileOffset(x, y));
+  }
+
+  getTileNeighbor(tile: Tile, [xOff, yOff]: [number, number]): Tile|undefined {
+    return this.getTile(tile.x + xOff, tile.y + yOff);
   }
 
   private getTileOffset(x: number, y: number) {
@@ -95,7 +104,7 @@ export class Chunk extends IntractableEntity {
     for (let x = 0; x < CHUNK_WIDTH; x++) {
       const col: Tile[] = [];
       for (let y = 0; y < CHUNK_HEIGHT; y++) {
-        col.push(new Tile(x, y, TileType.NonSolid));
+        col.push(new Tile(this, x, y, TileType.NonSolid));
       }
       this.tiles.push(col);
     }

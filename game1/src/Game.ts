@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 
+import {Tile} from './Chunk';
+import {TilePosition} from './common';
 import {Entity, IntractableEntity} from './Entity';
 import {InteractionObject} from './InteractionObject';
 import {Player} from './Player';
@@ -54,6 +56,26 @@ export class Game {
     }
 
     return null;
+  }
+
+  getTile(x: number, y: number): Tile|undefined {
+    return this.world.getTile(x, y);
+  }
+
+  getTileFromPosition(x: number, y: number): Tile|undefined {
+    return this.world.getTileFromPosition(x, y);
+  }
+
+  getTileWorldPosition(tile: Tile): TilePosition|undefined {
+    return this.world.getTileWorldPosition(tile);
+  }
+
+  calculateWorldPosition(x: number, y: number): THREE.Vector3 {
+    return this.world.calculateWorldPosition(x, y);
+  }
+
+  getTileNeighbor(tile: Tile, offset: [number, number]): Tile|undefined {
+    return this.world.getTileNeighbor(tile, offset);
   }
 
   private getIntractableEntity(intersection: THREE.Intersection) {

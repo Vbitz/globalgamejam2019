@@ -1,8 +1,10 @@
 import * as THREE from 'three';
 
-import {TileInteraction} from './Chunk';
+import {Tile, TileInteraction} from './Chunk';
+import {expect, TilePosition} from './common';
 import {Entity} from './Entity';
 import {Game} from './Game';
+import {PathFinder, PathPoint} from './PathFinder';
 
 export class Player extends Entity {
   readonly camera = new THREE.PerspectiveCamera();
@@ -10,16 +12,32 @@ export class Player extends Entity {
       new THREE.CubeGeometry(1, 1, 1),
       new THREE.MeshBasicMaterial({color: 'pink'}));
 
+  private pathFinder: PathFinder;
+
   private raycaster = new THREE.Raycaster();
+
+  private currentPath: PathPoint[] = [];
 
   constructor(game: Game) {
     super(game);
+
+    this.pathFinder = new PathFinder(game);
 
     this.camera.position.add(new THREE.Vector3(0, 0, 10));
 
     this.camera.rotateZ(0);
 
     this.add(this.camera, this.geometry);
+
+    setInterval(() => {
+      const nextPoint = this.currentPath.pop();
+
+      if (nextPoint === undefined) {
+        return;
+      }
+
+      this.moveToTile(nextPoint.pos);
+    }, 1000 / 10);
   }
 
   onResize(width: number, height: number) {
@@ -34,10 +52,27 @@ export class Player extends Entity {
         this.game.getInteractionObject(this, intersections);
 
     if (interactionObject instanceof TileInteraction) {
-      const worldPosition = interactionObject.getWorldPosition();
+      const worldPosition = this.getWorldPosition(new THREE.Vector3());
 
-      this.position.set(worldPosition.x, worldPosition.y, worldPosition.z);
+      const tile =
+          this.game.getTileFromPosition(worldPosition.x, worldPosition.y);
+
+      const path = this.pathFinder.getPath(
+          tile || expect(), interactionObject.getTile() || expect());
+
+      console.log(path);
+
+      if (path !== undefined) {
+        this.currentPath = path;
+      }
     }
+  }
+
+  private moveToTile(pos: TilePosition) {
+    const tileWorldPosition = this.game.calculateWorldPosition(pos.x, pos.y);
+
+    this.position.set(
+        tileWorldPosition.x, tileWorldPosition.y, tileWorldPosition.z);
   }
 
   private getIntersections(x: number, y: number) {
