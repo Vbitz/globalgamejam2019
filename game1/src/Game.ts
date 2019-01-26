@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 
+import {Entity, IntractableEntity} from './Entity';
+import {InteractionObject} from './InteractionObject';
 import {Player} from './Player';
 import {World} from './World';
 
@@ -30,6 +32,41 @@ export class Game {
     this.onResize();
 
     this.onUpdate();
+  }
+
+  getInteractionObject(source: Entity, intersections: THREE.Intersection[]):
+      InteractionObject|null {
+    intersections.sort((a, b) => a.distance - b.distance);
+
+    for (const intersection of intersections) {
+      const intractableEntity = this.getIntractableEntity(intersection);
+
+      if (intractableEntity === null) {
+        continue;
+      }
+
+      const interactionObject =
+          intractableEntity.onInteract(source, intersection);
+
+      if (interactionObject !== null) {
+        return interactionObject;
+      }
+    }
+
+    return null;
+  }
+
+  private getIntractableEntity(intersection: THREE.Intersection) {
+    let currentObject: THREE.Object3D|null = intersection.object;
+
+    while (currentObject !== null) {
+      if (currentObject instanceof IntractableEntity) {
+        return currentObject;
+      }
+      currentObject = currentObject.parent;
+    }
+
+    return null;
   }
 
   private onResize() {

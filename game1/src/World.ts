@@ -1,14 +1,17 @@
 import * as THREE from 'three';
 
+import {Chunk} from './Chunk';
 import {Entity} from './Entity';
 import {Game} from './Game';
 
 export class World extends Entity {
+  private testChunk: Chunk;
+
   constructor(game: Game) {
     super(game);
 
-    this.add(new THREE.Mesh(
-        new THREE.PlaneGeometry(8, 8),
-        new THREE.MeshBasicMaterial({color: 'red'})));
+    this.testChunk = new Chunk(this.game);
+
+    this.add(this.testChunk);
   }
 }

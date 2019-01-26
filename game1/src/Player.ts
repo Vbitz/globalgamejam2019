@@ -1,12 +1,13 @@
 import * as THREE from 'three';
 
+import {TileInteraction} from './Chunk';
 import {Entity} from './Entity';
 import {Game} from './Game';
 
 export class Player extends Entity {
   readonly camera = new THREE.PerspectiveCamera();
   readonly geometry = new THREE.Mesh(
-      new THREE.CubeGeometry(2, 2, 2),
+      new THREE.CubeGeometry(1, 1, 1),
       new THREE.MeshBasicMaterial({color: 'pink'}));
 
   private raycaster = new THREE.Raycaster();
@@ -29,7 +30,14 @@ export class Player extends Entity {
   onMouseClick(x: number, y: number) {
     const intersections = this.getIntersections(x, y);
 
-    console.log(intersections);
+    const interactionObject =
+        this.game.getInteractionObject(this, intersections);
+
+    if (interactionObject instanceof TileInteraction) {
+      const worldPosition = interactionObject.getWorldPosition();
+
+      this.position.set(worldPosition.x, worldPosition.y, worldPosition.z);
+    }
   }
 
   private getIntersections(x: number, y: number) {
