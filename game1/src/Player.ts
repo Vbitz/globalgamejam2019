@@ -4,13 +4,12 @@ import {Tile, TileInteraction} from './Chunk';
 import {expect, TilePosition} from './common';
 import {Entity} from './Entity';
 import {Game} from './Game';
+import {BLENDER_MONKEY} from './Model';
 import {PathFinder, PathPoint} from './PathFinder';
 
 export class Player extends Entity {
   readonly camera = new THREE.PerspectiveCamera();
-  readonly geometry = new THREE.Mesh(
-      new THREE.CubeGeometry(1, 1, 1),
-      new THREE.MeshBasicMaterial({color: 'pink'}));
+  readonly geometry: THREE.Group;
 
   private pathFinder: PathFinder;
 
@@ -20,6 +19,8 @@ export class Player extends Entity {
 
   constructor(game: Game) {
     super(game);
+
+    this.geometry = this.game.resourceLoader.loadOBJContent(BLENDER_MONKEY);
 
     this.pathFinder = new PathFinder(game);
 

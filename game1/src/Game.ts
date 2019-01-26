@@ -5,16 +5,20 @@ import {TilePosition} from './common';
 import {Entity, IntractableEntity} from './Entity';
 import {InteractionObject} from './InteractionObject';
 import {Player} from './Player';
+import {ResourceLoader} from './ResourceLoader';
 import {World} from './World';
 
 export class Game {
   renderer: THREE.WebGLRenderer;
   scene = new THREE.Scene();
-  player = new Player(this);
+  player: Player;
   world = new World(this);
+  resourceLoader = new ResourceLoader();
 
   constructor(private document: Document) {
     this.renderer = new THREE.WebGLRenderer({antialias: true});
+
+    this.player = new Player(this);
   }
 
   run() {
