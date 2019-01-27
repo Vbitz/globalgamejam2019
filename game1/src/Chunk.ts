@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import {setMaterial, TilePosition, WorldPosition} from './common';
+import {GlobalTilePosition, LocalTilePosition, setMaterial, WorldPosition} from './common';
 import {Entity, IntractableEntity} from './Entity';
 import {Game} from './Game';
 import {InteractionObject} from './InteractionObject';
@@ -13,7 +13,7 @@ const enum TileType {
 
 export class Tile {
   constructor(
-      readonly owner: Chunk, readonly pos: TilePosition,
+      readonly owner: Chunk, readonly pos: LocalTilePosition,
       public type: TileType) {}
 
   isSolid() {
@@ -25,7 +25,7 @@ export const CHUNK_WIDTH = 16;
 export const CHUNK_HEIGHT = 16;
 
 export class TileInteraction extends InteractionObject {
-  constructor(readonly chunk: Chunk, private tilePos: TilePosition) {
+  constructor(readonly chunk: Chunk, private tilePos: LocalTilePosition) {
     super();
   }
 
@@ -34,7 +34,7 @@ export class TileInteraction extends InteractionObject {
   }
 
   getWorldPosition(): THREE.Vector3 {
-    return this.chunk.calculateWorldPosition(this.tilePos.x, this.tilePos.y);
+    return this.chunk.getWorldPositionFromTilePosition(this.tilePos);
   }
 }
 
@@ -92,7 +92,7 @@ export class Chunk extends IntractableEntity {
         this, {x: Math.floor(tileX), y: Math.floor(tileY)});
   }
 
-  getTileFromTilePosition(tilePos: TilePosition): Tile|undefined {
+  getTileFromTilePosition(tilePos: LocalTilePosition): Tile|undefined {
     if (tilePos.x < 0 || tilePos.x > CHUNK_WIDTH - 1 || tilePos.y < 0 ||
         tilePos.y > CHUNK_HEIGHT - 1) {
       return undefined;
@@ -100,14 +100,9 @@ export class Chunk extends IntractableEntity {
     return this.tiles[tilePos.x][tilePos.y];
   }
 
-  getTileFromWorldPosition(worldPos: WorldPosition): Tile|undefined {
-    return this.getTileFromTilePosition(
-        this.getTilePositionFromWorldPosition(worldPos));
-  }
-
-  calculateWorldPosition(x: number, y: number): THREE.Vector3 {
+  getWorldPositionFromTilePosition(tilePos: LocalTilePosition): THREE.Vector3 {
     return this.getWorldPosition(new THREE.Vector3())
-        .add(this.getTileOffset(x, y));
+        .add(this.getTileOffset(tilePos));
   }
 
   getTileNeighbor(tile: Tile, [xOff, yOff]: [number, number]): Tile|undefined {
@@ -115,17 +110,10 @@ export class Chunk extends IntractableEntity {
         {x: tile.pos.x + xOff, y: tile.pos.y + yOff});
   }
 
-  private getTilePositionFromWorldPosition(worldPos: WorldPosition):
-      TilePosition {
-    return {
-      x: Math.floor(worldPos.x + (CHUNK_WIDTH / 2)),
-      y: Math.floor(worldPos.y + (CHUNK_HEIGHT / 2))
-    };
-  }
-
-  private getTileOffset(x: number, y: number) {
+  private getTileOffset(tilePos: LocalTilePosition) {
     return new THREE.Vector3(
-        (x - (CHUNK_WIDTH / 2)) + 0.5, (y - (CHUNK_HEIGHT / 2)) + 0.5, 0);
+        (tilePos.x - (CHUNK_WIDTH / 2)) + 0.5,
+        (tilePos.y - (CHUNK_HEIGHT / 2)) + 0.5, 0);
   }
 
   private init() {

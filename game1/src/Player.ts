@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 import {Tile, TileInteraction} from './Chunk';
-import {expect, setMaterial, TilePosition} from './common';
+import {expect, GlobalTilePosition, setMaterial} from './common';
 import {Entity} from './Entity';
 import {Game} from './Game';
 import {BLENDER_MONKEY, OBJ_MEMES, PLACEHOLDER_PLAYER} from './Model';
@@ -73,8 +73,8 @@ export class Player extends Entity {
     }
   }
 
-  private moveToTile(pos: TilePosition) {
-    const tileWorldPosition = this.game.calculateWorldPosition(pos.x, pos.y);
+  private moveToTile(pos: GlobalTilePosition) {
+    const tileWorldPosition = this.game.getWorldPositionFromTilePosition(pos);
 
     this.position.set(
         tileWorldPosition.x, tileWorldPosition.y, tileWorldPosition.z);

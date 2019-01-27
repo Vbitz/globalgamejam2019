@@ -8,14 +8,27 @@ export function expect(): never {
   throw new Error('Expect failed');
 }
 
+// All three of these are an attempt to get more clarity in the code that uses
+// them. The names are still not universally applied and could be misleading.
+
 /**
- * The global or local index of a tile in the tile grid.
+ * The global index of a tile in the tile grid.
  */
-export interface TilePosition {
+export interface GlobalTilePosition {
   x: number;
   y: number;
 
-  __tileFlag?: unknown;
+  __flag?: 'globalTile';
+}
+
+/**
+ * The local index of a tile in the tile grid.
+ */
+export interface LocalTilePosition {
+  x: number;
+  y: number;
+
+  __flag?: 'localTile';
 }
 
 /**
@@ -25,7 +38,7 @@ export interface ChunkPosition {
   x: number;
   y: number;
 
-  __chunkFlag?: unknown;
+  __flag?: 'chunk';
 }
 
 /**
@@ -35,10 +48,14 @@ export interface WorldPosition {
   x: number;
   y: number;
 
-  __worldFlag?: unknown;
+  __flag?: 'world';
 }
 
-export function tileDistance(a: TilePosition, b: TilePosition) {
+export function tileDistance(a: GlobalTilePosition, b: GlobalTilePosition) {
+  return Math.sqrt(Math.pow(b.y - a.y, 2) + Math.pow(b.x - a.x, 2));
+}
+
+export function worldDistance(a: WorldPosition, b: WorldPosition) {
   return Math.sqrt(Math.pow(b.y - a.y, 2) + Math.pow(b.x - a.x, 2));
 }
 

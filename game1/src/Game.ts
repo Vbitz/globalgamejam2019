@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 import {Tile} from './Chunk';
-import {TilePosition, WorldPosition} from './common';
+import {GlobalTilePosition, WorldPosition} from './common';
 import {Entity, IntractableEntity} from './Entity';
 import {InteractionObject} from './InteractionObject';
 import {Player} from './Player';
@@ -64,7 +64,7 @@ export class Game {
     return null;
   }
 
-  getTileFromTilePosition(tilePos: TilePosition): Tile|undefined {
+  getTileFromTilePosition(tilePos: GlobalTilePosition): Tile|undefined {
     return this.world.getTileFromTilePosition(tilePos);
   }
 
@@ -72,12 +72,16 @@ export class Game {
     return this.world.getTileFromWorldPosition(worldPos);
   }
 
-  getWorldPositionFromTile(tile: Tile): TilePosition|undefined {
+  getWorldPositionFromTile(tile: Tile): WorldPosition|undefined {
     return this.world.getWorldPositionFromTile(tile);
   }
 
-  calculateWorldPosition(x: number, y: number): THREE.Vector3 {
-    return this.world.calculateWorldPosition(x, y);
+  getWorldPositionFromTilePosition(tilePos: GlobalTilePosition): THREE.Vector3 {
+    return this.world.getWorldPositionFromTilePosition(tilePos);
+  }
+
+  getTilePositionFromTile(tile: Tile): GlobalTilePosition {
+    return this.world.getTilePositionFromTile(tile);
   }
 
   getTileNeighbor(tile: Tile, offset: [number, number]): Tile|undefined {

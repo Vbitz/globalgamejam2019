@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 import {Chunk, CHUNK_HEIGHT, CHUNK_WIDTH, Tile} from './Chunk';
-import {ChunkPosition, TilePosition, WorldPosition} from './common';
+import {ChunkPosition, GlobalTilePosition, LocalTilePosition, WorldPosition} from './common';
 import {Entity} from './Entity';
 import {Game} from './Game';
 
@@ -24,7 +24,8 @@ export class World extends Entity {
   getTileFromWorldPosition(worldPos: WorldPosition): Tile|undefined {
     // TODO(joshua): This function should convert to tilePosition then call
     // getTileFromTilePosition.
-    return this.testChunk.getTileFromWorldPosition(worldPos);
+    const tilePosition = this.getTilePositionFromWorldPosition(worldPos);
+    return this.getTileFromTilePosition(tilePosition);
   }
 
   /**
@@ -32,8 +33,11 @@ export class World extends Entity {
    * @param x
    * @param y
    */
-  getTileFromTilePosition(tilePos: TilePosition): Tile|undefined {
-    return this.testChunk.getTileFromTilePosition(tilePos);
+  getTileFromTilePosition(tilePos: GlobalTilePosition): Tile|undefined {
+    const chunk = this.getChunkFromTilePosition(tilePos);
+    const localPos =
+        this.getLocalTilePositionFromGlobalTilePosition(chunk, tilePos);
+    return chunk.getTileFromTilePosition(localPos);
   }
 
   /**
@@ -49,8 +53,20 @@ export class World extends Entity {
    * @param x
    * @param y
    */
-  calculateWorldPosition(x: number, y: number): THREE.Vector3 {
-    return this.testChunk.calculateWorldPosition(x, y);
+  getWorldPositionFromTilePosition(tilePos: GlobalTilePosition): THREE.Vector3 {
+    const chunk = this.getChunkFromTilePosition(tilePos);
+    const localPos =
+        this.getLocalTilePositionFromGlobalTilePosition(chunk, tilePos);
+    return this.testChunk.getWorldPositionFromTilePosition(localPos);
+  }
+
+  getTilePositionFromTile(tile: Tile): GlobalTilePosition {
+    const localPos = tile.pos;
+
+    const globalPosition =
+        this.getGlobalTilePositionFromLocalTilePosition(tile.owner, localPos);
+
+    return globalPosition;
   }
 
   /**
@@ -63,24 +79,35 @@ export class World extends Entity {
     return this.testChunk.getTileNeighbor(tile, offset);
   }
 
+  private getLocalTilePositionFromGlobalTilePosition(
+      chunk: Chunk, globalTilePos: GlobalTilePosition): LocalTilePosition {
+    // TODO(joshua): Fix this.
+    return {x: globalTilePos.x, y: globalTilePos.y};
+  }
+
+  private getGlobalTilePositionFromLocalTilePosition(
+      chunk: Chunk, localTilePos: LocalTilePosition): GlobalTilePosition {
+    // TODO(joshua): Fix this.
+    return {x: localTilePos.x, y: localTilePos.y};
+  }
+
   /**
    * This function is badly named. It removes the half chunk offset between
-   * world and chunk positions. This does not convert from a world position to a
-   * chunk index.
+   * world and chunk positions. This does not convert from a world position
+   * to a chunk index.
    */
-  private worldPositionToChunkPosition(worldPos: WorldPosition): WorldPosition {
+  private getTilePositionFromWorldPosition(worldPos: WorldPosition):
+      GlobalTilePosition {
     return {
-      x: worldPos.x + (CHUNK_WIDTH / 2),
-      y: worldPos.y + (CHUNK_HEIGHT / 2)
+      x: Math.floor(worldPos.x + (CHUNK_WIDTH / 2)),
+      y: Math.floor(worldPos.y + (CHUNK_HEIGHT / 2))
     };
   }
 
-  private lookupChunkByWorldPosition(worldPos: WorldPosition) {
-    const chunkPos = this.worldPositionToChunkPosition(worldPos);
-
+  private getChunkFromTilePosition(tilePos: GlobalTilePosition) {
     return this.getChunk({
-      x: Math.floor(chunkPos.x / CHUNK_WIDTH),
-      y: Math.floor(chunkPos.y / CHUNK_HEIGHT)
+      x: Math.floor(tilePos.x / CHUNK_WIDTH),
+      y: Math.floor(tilePos.y / CHUNK_HEIGHT)
     });
   }
 

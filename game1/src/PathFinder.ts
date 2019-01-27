@@ -1,10 +1,10 @@
 import {Tile} from './Chunk';
-import {expect, tileDistance, TilePosition} from './common';
+import {expect, GlobalTilePosition, tileDistance, worldDistance, WorldPosition} from './common';
 import {Game} from './Game';
 
 export interface PathPoint {
   tile: Tile;
-  pos: TilePosition;
+  pos: GlobalTilePosition;
 }
 
 function getWithDefault<K, V>(map: Map<K, V>, key: K, defaultValue: V): V {
@@ -102,14 +102,14 @@ export class PathFinder {
 
     ret.push({
       tile: current,
-      pos: this.game.getWorldPositionFromTile(current) || expect()
+      pos: this.game.getTilePositionFromTile(current) || expect()
     });
 
     while (cameFrom.has(current)) {
       current = cameFrom.get(current) || expect();
       ret.push({
         tile: current,
-        pos: this.game.getWorldPositionFromTile(current) || expect()
+        pos: this.game.getTilePositionFromTile(current) || expect()
       });
     }
 
@@ -120,6 +120,6 @@ export class PathFinder {
     const aPos = this.game.getWorldPositionFromTile(a) || expect();
     const bPos = this.game.getWorldPositionFromTile(b) || expect();
 
-    return tileDistance(aPos, bPos);
+    return worldDistance(aPos, bPos);
   }
 }
