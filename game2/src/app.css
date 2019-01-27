@@ -1,0 +1,94 @@
+body {
+  font-family: sans-serif;
+}
+
+h1 {
+  border-bottom: 2px solid #303030;
+}
+
+h2 {}
+
+h2>#totalSleep {
+  font-weight: lighter;
+}
+
+h2>#sleepPerSecond {
+  font-weight: lighter;
+}
+
+h3 {
+  border-bottom: 1px solid #707070;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+#sleepButton {
+  border: 1px solid black;
+  padding: 8px;
+  font-weight: bold;
+  color: black;
+  text-decoration: none;
+  border-radius: 6px;
+}
+
+#sleepButton>#sleepButtonAmount {
+  font-weight: lighter;
+}
+
+.upgrade,
+.item {
+  margin: 0 20px;
+}
+
+.upgrade-purchased>.upgrade-name {
+  color: #707070;
+}
+
+.upgrade-name,
+.item-name {
+  font-size: 150%;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.item-level {
+  font-weight: bold;
+}
+
+.item-level>span {
+  font-weight: lighter;
+}
+
+
+.upgrade-price,
+.item-price {
+  font-weight: bold;
+}
+
+.upgrade-price>span,
+.item-price>span {
+  font-weight: lighter;
+}
+
+.upgrade-buy-button,
+.item-upgrade-button {
+  display: block;
+  margin-top: 10px;
+  border: 1px solid black;
+  padding: 8px;
+  font-weight: bold;
+  color: black;
+  text-decoration: none;
+  border-radius: 6px;
+}
+
+.button-enabled {
+  color: green;
+}
+
+.button-disabled {
+  color: red;
+}
